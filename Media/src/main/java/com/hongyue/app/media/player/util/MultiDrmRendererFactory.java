@@ -27,6 +27,7 @@ import com.google.android.exoplayer2.audio.AudioProcessor;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
 import com.google.android.exoplayer2.drm.DrmSessionManager;
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto;
+import com.google.android.exoplayer2.mediacodec.MediaCodecSelector;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.hongyue.app.media.util.misc.CollectionUtils;
 
@@ -61,27 +62,31 @@ public class MultiDrmRendererFactory extends DefaultRenderersFactory {
     }
 
 
-
-
     @Override
     protected void buildVideoRenderers(Context context,
+                                       int extensionRendererMode,
+                                       MediaCodecSelector mediaCodecSelector,
                                        @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
-                                       long allowedVideoJoiningTimeMs,
+                                       boolean playClearSamplesWithoutKeys,
+                                       boolean enableDecoderFallback,
                                        Handler eventHandler,
                                        VideoRendererEventListener eventListener,
-                                       int extensionRendererMode,
+                                       long allowedVideoJoiningTimeMs,
                                        ArrayList<Renderer> out) {
         final ArrayList<Renderer> localOut = new ArrayList<>();
 
-        super.buildVideoRenderers(
-            context,
-            drmSessionManager,
-            allowedVideoJoiningTimeMs,
-            eventHandler,
-            eventListener,
-            extensionRendererMode,
-            localOut
-        );
+        super.buildVideoRenderers(context,
+                extensionRendererMode,
+                mediaCodecSelector,
+                drmSessionManager,
+                playClearSamplesWithoutKeys,
+                enableDecoderFallback,
+                eventHandler,
+                eventListener,
+                allowedVideoJoiningTimeMs,
+                localOut);
+
+
 
         final Set<Renderer> outSet = new HashSet<>(localOut);
 
@@ -90,13 +95,16 @@ public class MultiDrmRendererFactory extends DefaultRenderersFactory {
 
             for(DrmSessionManager<FrameworkMediaCrypto> manager : this.drmSessionManagers) {
                 super.buildVideoRenderers(
-                    context,
-                    manager,
-                    allowedVideoJoiningTimeMs,
-                    eventHandler,
-                    eventListener,
-                    EXTENSION_RENDERER_MODE_OFF,
-                    localOut
+                        context,
+                        EXTENSION_RENDERER_MODE_OFF,
+                        MediaCodecSelector.DEFAULT,
+                        manager,
+                        playClearSamplesWithoutKeys,
+                        enableDecoderFallback,
+                        eventHandler,
+                        eventListener,
+                        allowedVideoJoiningTimeMs,
+                        localOut
                 );
             }
 
@@ -107,27 +115,30 @@ public class MultiDrmRendererFactory extends DefaultRenderersFactory {
     }
 
 
-
-
     @Override
     protected void buildAudioRenderers(Context context,
+                                       int extensionRendererMode,
+                                       MediaCodecSelector mediaCodecSelector,
                                        @Nullable DrmSessionManager<FrameworkMediaCrypto> drmSessionManager,
+                                       boolean playClearSamplesWithoutKeys,
+                                       boolean enableDecoderFallback,
                                        AudioProcessor[] audioProcessors,
                                        Handler eventHandler,
                                        AudioRendererEventListener eventListener,
-                                       int extensionRendererMode,
                                        ArrayList<Renderer> out) {
+
         final ArrayList<Renderer> localOut = new ArrayList<>();
 
-        super.buildAudioRenderers(
-            context,
-            drmSessionManager,
-            audioProcessors,
-            eventHandler,
-            eventListener,
-            extensionRendererMode,
-            localOut
-        );
+        super.buildAudioRenderers(context,
+                extensionRendererMode,
+                MediaCodecSelector.DEFAULT,
+                drmSessionManager,
+                playClearSamplesWithoutKeys,
+                enableDecoderFallback,
+                audioProcessors,
+                eventHandler,
+                eventListener,
+                localOut);
 
         final Set<Renderer> outSet = new HashSet<>(localOut);
 
@@ -136,13 +147,16 @@ public class MultiDrmRendererFactory extends DefaultRenderersFactory {
 
             for(DrmSessionManager<FrameworkMediaCrypto> manager : this.drmSessionManagers) {
                 super.buildAudioRenderers(
-                    context,
-                    manager,
-                    audioProcessors,
-                    eventHandler,
-                    eventListener,
-                    EXTENSION_RENDERER_MODE_OFF,
-                    localOut
+                        context,
+                        EXTENSION_RENDERER_MODE_OFF,
+                        mediaCodecSelector,
+                        manager,
+                        playClearSamplesWithoutKeys,
+                        enableDecoderFallback,
+                        audioProcessors,
+                        eventHandler,
+                        eventListener,
+                        localOut
                 );
             }
 
