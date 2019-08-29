@@ -69,7 +69,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation rootProject.ext.dependencies["xMaterial"]
-    implementation rootProject.ext.dependencies["exoPlayer"]
+    api rootProject.ext.dependencies["exoPlayer"]
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 }
