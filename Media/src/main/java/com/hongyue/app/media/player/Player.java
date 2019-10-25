@@ -135,14 +135,14 @@ public interface Player {
      *
      * @param eventListener the player event listener
      */
-    void addEventListener(@NonNull Player.EventListener eventListener);
+    void addEventListener(@NonNull EventListener eventListener);
 
     /**
      * Unregisters the registered {@link EventListener}.
      *
      * @param eventListener the player event listener
      */
-    void removeEventListener(@NonNull Player.EventListener eventListener);
+    void removeEventListener(@NonNull EventListener eventListener);
 
     /**
      * Unregisters all the registered {@link EventListener}s (if there's any).

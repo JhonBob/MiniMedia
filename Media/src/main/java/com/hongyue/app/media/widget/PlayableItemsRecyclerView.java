@@ -210,7 +210,7 @@ public final class PlayableItemsRecyclerView extends RecyclerView implements Pla
 
 
 
-    private void onRecyclerViewViewRecycled(RecyclerView.ViewHolder holder) {
+    private void onRecyclerViewViewRecycled(ViewHolder holder) {
         if(!(holder instanceof Playable)) {
             return;
         }
@@ -232,7 +232,7 @@ public final class PlayableItemsRecyclerView extends RecyclerView implements Pla
         final int childCount = getChildCount();
         final boolean canHaveMultipleActiveItems = AutoplayMode.MULTIPLE_SIMULTANEOUSLY.equals(mAutoplayMode);
 
-        RecyclerView.ViewHolder viewHolder;
+        ViewHolder viewHolder;
         boolean isInPlayableArea;
         boolean hasActiveItem = false;
 
@@ -272,7 +272,7 @@ public final class PlayableItemsRecyclerView extends RecyclerView implements Pla
 
     private void stopItemPlayback() {
         final int childCount = getChildCount();
-        RecyclerView.ViewHolder viewHolder;
+        ViewHolder viewHolder;
 
         for(int i = 0; i < childCount; i++) {
             viewHolder = findContainingViewHolder(getChildAt(i));
@@ -289,7 +289,7 @@ public final class PlayableItemsRecyclerView extends RecyclerView implements Pla
 
     private void pauseItemPlayback() {
         final int childCount = getChildCount();
-        RecyclerView.ViewHolder viewHolder;
+        ViewHolder viewHolder;
 
         for(int i = 0; i < childCount; i++) {
             viewHolder = findContainingViewHolder(getChildAt(i));
@@ -306,7 +306,7 @@ public final class PlayableItemsRecyclerView extends RecyclerView implements Pla
 
     private void releaseAllItems() {
         final int childCount = getChildCount();
-        RecyclerView.ViewHolder viewHolder;
+        ViewHolder viewHolder;
 
         for(int i = 0; i < childCount; i++) {
             viewHolder = findContainingViewHolder(getChildAt(i));
