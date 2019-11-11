@@ -76,7 +76,7 @@ public final class ExoPlayerUtils {
 
         if(sCache == null) {
             sCache = new SimpleCache(
-                context.getCacheDir(),
+                context.getExternalCacheDir(),
                 new LeastRecentlyUsedCacheEvictor(cacheSize)
             );
         }
