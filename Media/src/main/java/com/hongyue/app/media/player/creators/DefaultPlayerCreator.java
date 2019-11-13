@@ -94,9 +94,10 @@ public final class DefaultPlayerCreator implements PlayerCreator {
             baseFactory
         );
 
-        if(config.cache != null) {
-            factory = new CacheDataSourceFactory(config.cache, factory);
-        }
+//        //禁用缓存
+//        if(config.cache != null) {
+//            factory = new CacheDataSourceFactory(config.cache, factory);
+//        }
 
         return factory;
     }

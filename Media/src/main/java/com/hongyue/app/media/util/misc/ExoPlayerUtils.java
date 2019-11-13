@@ -74,12 +74,13 @@ public final class ExoPlayerUtils {
     public static synchronized Cache getCache(@NonNull Context context, long cacheSize) {
         Preconditions.nonNull(context);
 
-        if(sCache == null) {
-            sCache = new SimpleCache(
-                context.getExternalCacheDir(),
-                new LeastRecentlyUsedCacheEvictor(cacheSize)
-            );
-        }
+//        //禁用缓存
+//        if(sCache == null) {
+//            sCache = new SimpleCache(
+//                context.getExternalCacheDir(),
+//                new LeastRecentlyUsedCacheEvictor(cacheSize)
+//            );
+//        }
 
         return sCache;
     }
