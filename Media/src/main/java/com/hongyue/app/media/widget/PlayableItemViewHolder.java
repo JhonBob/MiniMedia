@@ -19,13 +19,14 @@ package com.hongyue.app.media.widget;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import androidx.annotation.FloatRange;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -42,6 +43,8 @@ import com.hongyue.app.media.util.misc.ExoPlayerUtils;
 import com.hongyue.app.media.util.misc.TimeUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import app.hongyue.com.media.R;
 
@@ -65,6 +68,8 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
     public final ViewGroup mParentViewGroup;
     public final PlayerView mPlayerView;
     public PlayerTimerHandler mHandler;
+    private Timer timer;
+    private TimerTask timerTask;
 
 
     public PlayableItemViewHolder(ViewGroup parentViewGroup, View itemView) {
@@ -171,7 +176,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
             player.seek(playbackInfo.getPlaybackPosition());
             player.prepare(false);
             player.play();
-            schedulePlayerTimer();
+            startPlayerTimer();
         }
 
         return shouldPlay;
@@ -202,7 +207,8 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
         player.seek(playbackInfo.getPlaybackPosition());
         player.prepare(false);
         player.play();
-        schedulePlayerTimer();
+        resumePalyerTimer();
+
     }
 
 
@@ -217,7 +223,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
 
             playbackInfo.setPlaybackPosition(player.getPlaybackPosition());
             setPlaybackInfo(playbackInfo);
-            releasePalyerTimer();
+            pausePalyerTimer();
         }
     }
 
@@ -237,8 +243,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
 
             playbackInfo.setPlaybackPosition(0L);
             setPlaybackInfo(playbackInfo);
-
-            releasePalyerTimer();
+            stopPlayerTimer();
         }
     }
 
@@ -249,7 +254,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
         final Player player = getPlayer();
         unregisterPlayer();
         removePlaybackInfo();
-        releasePalyerTimer();
+        destroyPalyerTimer();
 
         if(player != null) {
             player.pause();
@@ -717,34 +722,103 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
 
 
 
+
     /**
-     *  Description:  调度定时器
+     *  Description:  初始化定时器
      *  Author: Charlie
-     *  Data: 2019/7/7  11:02
+     *  Data: 2020/1/9  13:38
      *  Declare: None
      */
 
-    private void schedulePlayerTimer(){
+    private void initPlayerTimer(){
+
+        timerTask = new TimerTask() {
+
+            @Override
+            public void run() {
+
+                if (getDuration() >= 0) {
+                    int time = (int) ((getDuration() - getPlaybackPosition()) / 1000);
+                    Message message = new Message();
+                    message.what = UPDATE_TIME;
+                    message.arg1 = time;
+                    mHandler.sendMessage(message);
+                }
+
+            }
+        };
+        timer = new Timer();
+
+    }
+
+
+    /**
+     *  Description:  开始定时器
+     *  Author: Charlie
+     *  Data: 2020/1/9  13:40
+     *  Declare: None
+     */
+
+    private void startPlayerTimer(){
+
+        destroyPalyerTimer();
 
         if (mHandler == null) {
-            mHandler = new PlayerTimerHandler(this);
+            mHandler = new PlayerTimerHandler(PlayableItemViewHolder.this);
         }
 
         if (!enableTimer()) {
             return;
         }
 
-        if (getDuration() >= 0) {
-            int time = (int) ((getDuration() - getPlaybackPosition()) / 1000);
-            Message message = new Message();
-            message.what = UPDATE_TIME;
-            message.arg1 = time;
-            mHandler.sendMessageDelayed(message, 500);
-        } else { //获取到的时间不正确，则打转
-            mHandler.sendEmptyMessageDelayed(0, 10);
-        }
+        initPlayerTimer();
 
+        timer.schedule(timerTask, 0, 1000);
     }
+
+
+    /**
+     *  Description:  取消定时器
+     *  Author: Charlie
+     *  Data: 2020/1/9  13:40
+     *  Declare: None
+     */
+
+    private void stopPlayerTimer(){
+        if (timer != null){
+            timer.cancel();
+        }
+    }
+
+
+
+    /**
+     *  Description:  暂停定时器
+     *  Author: Charlie
+     *  Data: 2020/1/9  13:34
+     *  Declare: None
+     */
+
+    private void pausePalyerTimer(){
+        if (timer != null){
+            timer.cancel();
+        }
+    }
+
+
+    /**
+     *  Description:  唤醒定时器
+     *  Author: Charlie
+     *  Data: 2020/1/9  13:40
+     *  Declare: None
+     */
+
+    private void resumePalyerTimer(){
+        destroyPalyerTimer();
+        initPlayerTimer();
+        timer.schedule(timerTask, 0, 1000);
+    }
+
 
 
     /**
@@ -754,7 +828,16 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
      *  Declare: None
      */
 
-    private void releasePalyerTimer(){
+    private void destroyPalyerTimer(){
+
+        if (timer != null){
+            timer.cancel();
+            timer = null;
+        }
+        if (timerTask != null){
+            timerTask.cancel();
+            timerTask = null;
+        }
         if (mHandler != null){
             mHandler.removeCallbacksAndMessages(null); //清除所有任务
         }
@@ -792,7 +875,6 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
                 onCountDownTime(TimeUtils.getPlayerTimeStr(msg.arg1));
             }
 
-            schedulePlayerTimer();
         }
 
     }
