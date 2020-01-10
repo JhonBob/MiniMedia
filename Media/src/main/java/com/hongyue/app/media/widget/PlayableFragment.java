@@ -702,7 +702,7 @@ public abstract class PlayableFragment extends Fragment implements Playable, Pla
             public void run() {
 
                 if (getDuration() >= 0) {
-                    int time = (int) ((getDuration() - getPlaybackPosition()) / 1000);
+                    int time = (int) ((getPlaybackPosition()) / 1000);
                     Message message = new Message();
                     message.what = UPDATE_TIME;
                     message.arg1 = time;
