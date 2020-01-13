@@ -489,7 +489,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
      *
      * @param isMuted the exact audio muted state.
      */
-    protected final void setMuted(boolean isMuted) {
+    public final void setMuted(boolean isMuted) {
         // creating/updating the corresponding Playback Info
         final PlaybackInfo playbackInfo = getPlaybackInfo();
         playbackInfo.getVolumeInfo().setMuted(isMuted);
@@ -512,7 +512,7 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
      *
      * @return the muted state of the audio.
      */
-    protected final boolean isMuted() {
+    public final boolean isMuted() {
         final PlaybackInfo playbackInfo = getPlaybackInfo();
         final Player player = getPlayer();
 
