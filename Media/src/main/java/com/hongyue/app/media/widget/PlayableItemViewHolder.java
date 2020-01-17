@@ -349,9 +349,9 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
 
     private MediaSource createMediaSource() {
         return PlayerProviderImpl.getInstance(itemView.getContext()).createMediaSource(
-            getConfig(),
-            Uri.parse(getUrl()),
-            isLooping()
+                getConfig(),
+                Uri.parse(getUrl()),
+                isLooping()
         );
     }
 
@@ -737,13 +737,9 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
             @Override
             public void run() {
 
-                if (getDuration() >= 0) {
-                    int time = (int) ((getPlaybackPosition()) / 1000);
-                    Message message = new Message();
-                    message.what = UPDATE_TIME;
-                    message.arg1 = time;
-                    mHandler.sendMessage(message);
-                }
+                Message message = new Message();
+                message.what = UPDATE_TIME;
+                mHandler.sendMessage(message);
 
             }
         };
@@ -871,8 +867,9 @@ public abstract class PlayableItemViewHolder extends RecyclerView.ViewHolder imp
                 return;
             }
 
-            if (msg.what == UPDATE_TIME) {
-                onCountDownTime(TimeUtils.getPlayerTimeStr(msg.arg1));
+            if (msg.what == UPDATE_TIME && getDuration() > 0) {
+                int time = (int) ((getPlaybackPosition()) / 1000);
+                onCountDownTime(TimeUtils.getPlayerTimeStr(time));
             }
 
         }

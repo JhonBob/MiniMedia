@@ -61,6 +61,12 @@ public abstract class PlayableFragment extends Fragment implements Playable, Pla
     }
 
 
+    /**
+     *  Description: 此函数由子类调用
+     *  Author: Charlie
+     *  Data: 2020/1/17  8:51
+     *  Declare: None
+     */
     public void onView(ViewGroup parentViewGroup, View mView) {
         mParentViewGroup = parentViewGroup;
         mPlayerView = mView.findViewById(R.id.player_view);
@@ -701,13 +707,9 @@ public abstract class PlayableFragment extends Fragment implements Playable, Pla
             @Override
             public void run() {
 
-                if (getDuration() >= 0) {
-                    int time = (int) ((getPlaybackPosition()) / 1000);
-                    Message message = new Message();
-                    message.what = UPDATE_TIME;
-                    message.arg1 = time;
-                    mHandler.sendMessage(message);
-                }
+                Message message = new Message();
+                message.what = UPDATE_TIME;
+                mHandler.sendMessage(message);
 
             }
         };
@@ -835,8 +837,9 @@ public abstract class PlayableFragment extends Fragment implements Playable, Pla
                 return;
             }
 
-            if (msg.what == UPDATE_TIME) {
-                onCountDownTime(TimeUtils.getPlayerTimeStr(msg.arg1));
+            if (msg.what == UPDATE_TIME && getDuration() > 0) {
+                int time = (int) ((getPlaybackPosition()) / 1000);
+                onCountDownTime(TimeUtils.getPlayerTimeStr(time));
             }
         }
 
